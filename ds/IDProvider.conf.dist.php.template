@@ -13,26 +13,26 @@
 // Please read the file DOC for information on the format of the entries
 
 // Category
-$IDProviders['university'] = array (
-        'Type' => 'category',
-        'Name' => 'Universities',
-);
+//$IDProviders['university'] = array (
+//        'Type' => 'category',
+ //       'Name' => 'Universities',
+//);
 
 // Category
-$IDProviders['unknown'] = array (
-        'Type' => 'category',
-        'Name' => 'Others',
-        'de' => array ('Name' => 'Andere'),
-        'fr' => array ('Name' => 'Autres'),
-        'it' => array ('Name' => 'Altri'),
-);
+//$IDProviders['unknown'] = array (
+//        'Type' => 'category',
+//        'Name' => 'Others',
+//        'de' => array ('Name' => 'Andere'),
+//        'fr' => array ('Name' => 'Autres'),
+//        'it' => array ('Name' => 'Altri'),
+//);
 
 
-$IDProviders['https://idp.example.com/idp/shibboleth'] = array(
-        'SSO' => 'https://idp.example.com/idp/profile/Shibboleth/SSO',
-        'Name' => 'Example BuildTool IdP',
-        'Type' => 'unknown',
-);
+//$IDProviders['https://idp.example.com/idp/shibboleth'] = array(
+ //       'SSO' => 'https://idp.example.com/idp/profile/Shibboleth/SSO',
+ //       'Name' => 'Example BuildTool IdP',
+ //       'Type' => 'unknown',
+// );
 
 
 

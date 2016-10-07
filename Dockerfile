@@ -6,6 +6,24 @@ USER root
 ### Configure our 'base'
 ###
 
+### 
+### important build arguements
+###
+
+ARG CDS_AGGREGATE=https://caf-shib2ops.ca/CoreServices/caf_metadata_signed_sha256.xml
+ARG CDS_HTMLROOTDIR=/var/www/html
+ARG CDS_HTMLWAYFDIR=/var/www/html/DS
+ARG CDS_WAYFDESTFILENAME=CAF.ds
+ARG CDS_REFRESHFREQINMIN=5
+
+###
+### important environment variables for runtime
+###
+
+ENV CDS_AGGREGATE=$CDS_AGGREGATE
+ENV CDS_REFRESHFREQINMIN=$CDS_REFRESHFREQINMIN
+
+
 # inspired from https://github.com/eugeneware/docker-apache-php/blob/master/Dockerfile
 # Keep upstart from complaining
 RUN dpkg-divert --local --rename --add /sbin/initctl
@@ -50,7 +68,7 @@ ADD ./ds/supervisord.conf /etc/supervisor/supervisord.conf
 ###
 
 # expecting to be in /var/www/html
-WORKDIR  /var/www/html
+WORKDIR  ${CDS_HTMLROOTDIR}
 
 # we want to grab the latest all the time so want to use cache busting
 # inspired by: http://stackoverflow.com/questions/37208027/openshift-3-1-prevent-docker-from-caching-curl-resource
@@ -66,18 +84,27 @@ RUN unzip master.zip
 RUN mv cds-master DS
 
 #move actual DS php executable to our legacy location
-RUN mv DS/WAYF DS/CAF.ds
+RUN mv ${CDS_HTMLWAYFDIR}/WAYF ${CDS_HTMLWAYFDIR}/${CDS_WAYFDESTFILENAME}
 
 
 # Apply our overlay to the application
 
-COPY ds/config.dist.php.template /var/www/html/DS/config.php
-COPY ds/IDProvider.conf.dist.php.template /var/www/html/DS/IDProvider.conf.php
+COPY ds/config.dist.php.template ${CDS_HTMLWAYFDIR}/config.php
+COPY ds/IDProvider.conf.dist.php.template ${CDS_HTMLWAYFDIR}/IDProvider.conf.php
+
+# remove the default index.html file
+RUN rm ${CDS_HTMLROOTDIR}/index.html
+
+# place redirection into the root of the webserver
+COPY ds/index.php.template ${CDS_HTMLROOTDIR}/index.php
 
 
 COPY ds/ds.conf /etc/apache2/conf-available/ds.conf
 RUN a2enconf ds
 #RUN service apache2 reload
+
+# test the environments
+RUN echo "${CDS_AGGREGATE}" > /var/www/aggregate2fetch
 
 COPY ds/mdfetch /var/www/mdfetch
 RUN chmod +x /var/www/mdfetch
@@ -85,7 +112,8 @@ RUN chmod +x /var/www/mdfetch
 #RUN (cd /var/www; /var/www/mdfetch)
 
 # test crons added via crontab
-RUN echo "*/2 * * * * /var/www/mdfetch " | crontab -  
+RUN echo "*/${CDS_REFRESHFREQINMIN} * * * * /var/www/mdfetch " | crontab -  
+
 # RUN echo "*/1 * * * * uptime >> /var/www/html/index.html" | crontab -  
 # RUN (crontab -l ; echo "*/2 * * * * free >> /var/www/html/index.html") 2>&1 | crontab -
 
@@ -97,7 +125,9 @@ EXPOSE 80
 ADD ./ds/start.sh /start.sh
 RUN chmod 755 /start.sh
 
-CMD ["/bin/bash", "/start.sh"]
+CMD ["/bin/bash", "/start.sh", "${CDS_AGGREGATE}"]
+
+CMD /bin/bash /start.sh ${CDS_AGGREGATE}
 
 
 

@@ -6,13 +6,16 @@ set -x
 # testshib: http://www.testshib.org/metadata/testshib-providers.xml
 #
 AGGDEFAULT="";
+MYAGGREGATE="/var/www/aggregate2fetch"
 
 if [ $# -eq 0 ]
   then
-    AGGDEFAULT="https://caf-shib2ops.ca/CoreServices/caf_metadata_signed_sha256.xml"
+    AGGDEFAULT=`cat ${MYAGGREGATE}`
     echo "No arguments supplied, default will be ${AGGDEFAULT}"
     echo "and single entity of example.com in IdProvider.conf.php"
 fi
+
+
 	AGGREGATE=${1:-$AGGDEFAULT}
 	curl  ${AGGREGATE} -o /var/www/metadata.myFederation.xml
 	/usr/bin/php /var/www/html/DS/readMetadata.php

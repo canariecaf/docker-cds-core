@@ -12,44 +12,34 @@ The image is purposely configured clean with an simple configuration for SWITCHw
 
 
 
-## To Run the image
+## To Build the image
 
 ### The variables & their defaults
 
 Environment variables with their defaults if they do not exist are:
 - CDS_AGGREGATE - the aggregate to point at and ingest via the cron command
--- default  is testshib: http://www.testshib.org/metadata/testshib-providers.xml
-- CDS_WORKDIR - the 
-- CDS_HTMLROOTDIR - 
-- CDS_HTMLWAYFDIR - 
+	-- defaults to: https://caf-shib2ops.ca/CoreServices/caf_metadata_signed_sha256.xml
+- CDS_HTMLROOTDIR - the HTML root directory of the webserver
+	-- defaults to: /var/www/html
+- CDS_HTMLWAYFDIR - the location in the container where the DS lives
+	-- default to: /var/www/html/DS
+- CDS_WAYFDESTFILENAME - the actual WAYF file to invoke
+	-- defaults to: CAF.ds
 
-to override them:
+## Runtime overrides of this image
+- CDS_AGGREGATE - the aggregate to point at and ingest via the cron command
+	-- defaults to: https://caf-shib2ops.ca/CoreServices/caf_metadata_signed_sha256.xml
+- CDS_REFRESHFREQINMIN - # of minutes between cron'd processing of the aggregate after intial fetch on start
+	-- defaults to: 5 
+
 
 pass them in on the command line:
 
 ```sh
-$ sudo docker run --env <key>=<value>
-```
-
-
-
-
-```sh
-$ sudo docker run -d -p 80:80 code-clearinghouse/docker-cds-core
+$ sudo docker run -e CDS_AGGREGATE=http://md.example.com/somethings.xml -e CDS_REFRESHFREQINMIN=5 -d -p 80:80 --restart=always canariecaf/docker-cds-core
 ```
 
 ## How to do a basic test?
 
-
 Open browser and point to: **http://localhost**
-
-## How to configure this image
-
-
-Replace /path/to/php/src with your php sources directory.
-
-```sh
-$ docker run -d -v /path/to/php/src:/srv -p 80:80 ricardson/docker-caddy-php
-```
-
-If everthing is fine you should see the PHP Test Page.
+If everthing is fine you should see the default Service Discovery Page with your aggregate

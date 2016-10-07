@@ -241,7 +241,7 @@ $metadataLockFile = '/tmp/wayf_metadata.lock';
 // This is mainly used for logging to syslog and in particular
 // useful in case multiple instances of the SWITCHwayf are
 // operated on the same host
-//$instanceIdentifier = 'CAFwayf';
+$instanceIdentifier = 'CAFwayf';
 
 // Name of the federation [deprecated]
 // This value is not used anymore in the standard code. 
@@ -251,11 +251,12 @@ $metadataLockFile = '/tmp/wayf_metadata.lock';
 // URL to send user to when clicking on federation logo
 // Insert %s as macro to be substituted by the language (e.g. 'en', 'de', 'fr', ...) the WAYF uses
 // Set to an empty string to hide the logo
-//$federationURL = 'http://www.example.org/myFed/';
+
+$federationURL = 'http://www.example.org/myFed/';
 
 // Absolute URL to the federation logo that should be displayed in the Embedded WAYF
 // Set to an empty string to hide the logo
-//$logoURL = 'http://ds.example.org/SWITCHwayf/images/federation-logo.png';
+$logoURL = 'images/federation-logo.png';
 
 // Absolute URL to the small federation logo that should be displayed in the 
 // embedded WAYF. Make sure the dimensions (in particular the height of the logo)
@@ -268,6 +269,7 @@ $supportContactEmail = 'tickets@example.com';
 // Absolute URL to the logo of the organization operating this Discovery Service
 // Set to an empty string to hide the logo
 //$organizationLogoURL = 'https://ds.example.org/SWITCHwayf/images/organization-logo.png'; 
+$organizationLogoURL = 'images/organization-logo.png'; 
 
 // Absolute URL to the organization's web page
 // Insert %s as macro to be substituted by the language (e.g. 'en', 'de', 'fr', ...) the WAYF uses
