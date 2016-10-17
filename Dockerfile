@@ -111,6 +111,8 @@ RUN chmod +x /var/www/mdfetch
 
 #RUN (cd /var/www; /var/www/mdfetch)
 
+RUN chown -R www-data:www-data ${CDS_HTMLWAYFDIR}
+
 # test crons added via crontab
 RUN echo "*/${CDS_REFRESHFREQINMIN} * * * * /var/www/mdfetch " | crontab -  
 
@@ -127,7 +129,7 @@ RUN chmod 755 /start.sh
 
 CMD ["/bin/bash", "/start.sh", "${CDS_AGGREGATE}"]
 
-CMD /bin/bash /start.sh ${CDS_AGGREGATE}
+#CMD /bin/bash /start.sh ${CDS_AGGREGATE}
 
 
 

@@ -15,6 +15,9 @@ else
 	echo "${1}" > ${MYAGGREGATE}
 fi
 
+#
+# note that the metadata fetch needs to have the config file as the full path.
+# mdfetch needs to know what directory to write to and is derived from within the container
 
 (cd /var/www; /var/www/mdfetch)
 echo "launching supervisord"

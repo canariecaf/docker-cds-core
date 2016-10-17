@@ -19,4 +19,5 @@ fi
 	AGGREGATE=${1:-$AGGDEFAULT}
 	curl  ${AGGREGATE} -o /var/www/metadata.myFederation.xml
 	/usr/bin/php /var/www/html/DS/readMetadata.php
+	chown www-data:www-data /tmp/wayf_metadata.lock
 

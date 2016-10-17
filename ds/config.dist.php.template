@@ -13,6 +13,8 @@ set_include_path('/var/www/html/DS/');
 
 $rootPath = '/var/www/';
 $wwwPath = $rootPath . 'html/DS/';
+$wwwBaseProtocol= 'http';
+// can be 'https'
 
 // 1. Language Settings
 //*********************
@@ -66,7 +68,7 @@ $cookieValidity = 100;
 //***************************
 
 // Whether to show the checkbox to permanently remember a setting
-$showPermanentSetting = false;
+$showPermanentSetting = true;
 
 // Whether or not to use the search-as-you-type feature of the drop down list
 // Enabling this will use JavaScript to convert the select element containing
@@ -79,7 +81,7 @@ $useImprovedDropDownList = true;
   // does not have to make requests to third party hosts.
   // Logos that are embedded using data URIs 
   // (src="data:image/png;base64...") will however still be displayed
-  //$disableRemoteLogos = false;
+$disableRemoteLogos = false;
 
 
 // Number of previously used Identity Providers to show at top of drop-down list
@@ -205,13 +207,13 @@ $metadataFile = $rootPath .'/metadata.myFederation.xml';
 // Will be updated automatically if the metadataFile modification time
 // is more recent than this file's
 // The user running the script must have permission to create $metadataIdpFile
-$metadataIDPFile = 'IDProvider.metadata.php';
+$metadataIDPFile = $wwwPath . 'IDProvider.metadata.php';
 
 // File to store the parsed SP list.
 // Will be updated automatically if the metadataFile modification time
 // is more recent than this file's
 // The user running the script must have permission to create $metadataIdpFile
-$metadataSPFile = 'SProvider.metadata.php';
+$metadataSPFile = $wwwPath . 'SProvider.metadata.php';
 
 // File to use as the lock file for writing the parsed IdP and SP lists.
 // The user running the script must have permission to write $metadataLockFile
@@ -220,17 +222,17 @@ $metadataLockFile = '/tmp/wayf_metadata.lock';
 // Use an absolute URL in case you want to use the embedded WAYF
 // The default assumes that this is in the same directory like
 // the WAYF script.
-//$imageURL = 'https://ds.example.org/SWITCHwayf/images';
+$imageURL = '/DS/images';
 
 // Absolute URL to point to css directory
 // The default assumes that this is in the same directory like
 // the WAYF script.
-//$cssURL = 'https://ds.example.org/SWITCHwayf/css';
+$cssURL = '/DS/css';
 
 // Absolute URL to point to javascript directory
 // The default assumes that this is in the same directory like
 // the WAYF script.
-//$javascriptURL = 'https://ds.example.org/SWITCHwayf/js';
+$javascriptURL = '/DS/js';
 
 
 
@@ -297,6 +299,6 @@ $organizationLogoURL = 'images/organization-logo.png';
 //**************************
 // If the development mode is activated, PHP errors and warnings will be displayed
 // on pages the SWITCHwayf generates
-//$developmentMode = false;
+$developmentMode = true;
 
 ?>
