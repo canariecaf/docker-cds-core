@@ -15,6 +15,7 @@ ARG CDS_HTMLROOTDIR=/var/www/html
 ARG CDS_HTMLWAYFDIR=/var/www/html/DS
 ARG CDS_WAYFDESTFILENAME=CAF.ds
 ARG CDS_REFRESHFREQINMIN=5
+ARG CDS_OVERLAYURL=""
 
 ###
 ### important environment variables for runtime
@@ -22,7 +23,10 @@ ARG CDS_REFRESHFREQINMIN=5
 
 ENV CDS_AGGREGATE=$CDS_AGGREGATE
 ENV CDS_REFRESHFREQINMIN=$CDS_REFRESHFREQINMIN
+ENV CDS_OVERLAYURL=$CDS_OVERLAYURL
 
+# where we leave our settings for the container's shell scripts to inherit
+ENV CDS_BUILD_ENV=/var/www/env
 
 # inspired from https://github.com/eugeneware/docker-apache-php/blob/master/Dockerfile
 # Keep upstart from complaining
@@ -118,6 +122,23 @@ RUN echo "*/${CDS_REFRESHFREQINMIN} * * * * /var/www/mdfetch " | crontab -
 
 # RUN echo "*/1 * * * * uptime >> /var/www/html/index.html" | crontab -  
 # RUN (crontab -l ; echo "*/2 * * * * free >> /var/www/html/index.html") 2>&1 | crontab -
+
+#
+# writing our settings to the image for other scripts to leverage
+
+RUN echo "CDS_AGGREGATE=${CDS_AGGREGATE}" > ${CDS_BUILD_ENV}
+RUN echo "CDS_HTMLROOTDIR=${CDS_HTMLROOTDIR}" >> ${CDS_BUILD_ENV}
+RUN echo "CDS_HTMLWAYFDIR=${CDS_HTMLWAYFDIR}" >> ${CDS_BUILD_ENV}
+RUN echo "CDS_WAYFDESTFILENAME=${CDS_WAYFDESTFILENAME}" >> ${CDS_BUILD_ENV}
+RUN echo "CDS_REFRESHFREQINMIN=${CDS_REFRESHFREQINMIN}" >> ${CDS_BUILD_ENV}
+
+#
+# place the overlay harness into image, the overlay URL to use, and invoke
+# default is to be a blank overlay URL and 'do nothing'
+
+RUN cp ds/overlay.sh /var/www/overlay.sh
+RUN echo "${CDS_OVERLAYURL}" > /var/www/defaultoverlayurl
+RUN (cd /var/www; /var/www/overlay.sh ${CDS_OVERLAYURL} )
 
 
 EXPOSE 80
