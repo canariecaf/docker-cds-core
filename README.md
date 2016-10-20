@@ -25,7 +25,8 @@ Environment variables with their defaults if they do not exist are:
 	-- default to: /var/www/html/DS
 - CDS_WAYFDESTFILENAME - the actual WAYF file to invoke
 	-- defaults to: CAF.ds
-- CDS_OVERLAYURL: https://github.com/canariecaf/cds-overlay-CAF/archive/master.zip	
+- CDS_OVERLAYURL - The zip file in URI format to retrieve (note you can use file:/// to refer to a local zip)
+	-- defaults to: <blank>
 
 ## Runtime overrides of this image
 - CDS_AGGREGATE - the aggregate to point at and ingest via the cron command
