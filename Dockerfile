@@ -131,12 +131,13 @@ RUN echo "CDS_HTMLROOTDIR=${CDS_HTMLROOTDIR}" >> ${CDS_BUILD_ENV}
 RUN echo "CDS_HTMLWAYFDIR=${CDS_HTMLWAYFDIR}" >> ${CDS_BUILD_ENV}
 RUN echo "CDS_WAYFDESTFILENAME=${CDS_WAYFDESTFILENAME}" >> ${CDS_BUILD_ENV}
 RUN echo "CDS_REFRESHFREQINMIN=${CDS_REFRESHFREQINMIN}" >> ${CDS_BUILD_ENV}
+RUN echo "CDS_OVERLAYURL=${CDS_OVERLAYURL}" >> ${CDS_BUILD_ENV}
 
 #
 # place the overlay harness into image, the overlay URL to use, and invoke
 # default is to be a blank overlay URL and 'do nothing'
 
-RUN cp ds/overlay.sh /var/www/overlay.sh
+COPY ds/overlay.sh /var/www/overlay.sh
 RUN echo "${CDS_OVERLAYURL}" > /var/www/defaultoverlayurl
 RUN (cd /var/www; /var/www/overlay.sh ${CDS_OVERLAYURL} )
 

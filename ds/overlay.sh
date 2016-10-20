@@ -36,12 +36,13 @@ mkdir ${WORKDIR}
 OVERLAY=${1:-$OVLDEFAULT}
 OVLPACK=`echo "${OVERLAY##*/}"`
 
-curl  ${OVERLDAY} -o ${WORKDIR}/${OVLPACK}
-(cd ${WORKDIR}; unzip ${OVLPACK})
+(cd ${WORKDIR}; curl  -vsSLOk  ${OVERLAY} -o ${OVLPACK})
+(ls -la; cd ${WORKDIR}; ls -la ; unzip ./${OVLPACK} )
 
-# do the 'act of overlaying'
+# do the 'act of overlaying' by requiring the assets folder.
+ASSETROOT=`find ${WORKDIR} -name "assets"`
 
-(cd ${WORKDIR}; ./do_overlay.sh)
+(cd ${ASSETROOT}/..; ./do_overlay.sh)
 
 echo "Overlay complete."
 exit
