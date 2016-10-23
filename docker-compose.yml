@@ -5,7 +5,7 @@ services:
       context: .
       args:
           CDS_AGGREGATE: https://caf-shib2ops.ca/CoreServices/caf_metadata_signed_sha256.xml
-    command: '/start.sh'
+    command: '/root/start.sh'
     ports:
       - "80:80"
     

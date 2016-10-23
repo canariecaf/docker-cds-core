@@ -158,10 +158,10 @@ EXPOSE 80
 # 
 # This was 'ADD', using COPY instead to fix breaking build inspired by responses here:
 # http://stackoverflow.com/questions/24958140/what-is-the-difference-between-the-copy-and-add-commands-in-a-dockerfile
-COPY ./ds/start.sh /start.sh
-RUN chmod 755 /start.sh
+COPY ./ds/start.sh /root/start.sh
+RUN chmod 755 /root/start.sh
 
-CMD ["/bin/bash", "/start.sh", "${CDS_AGGREGATE}"]
+CMD ["/bin/bash", "/root/start.sh", "${CDS_AGGREGATE}"]
 
 #CMD /bin/bash /start.sh ${CDS_AGGREGATE}
 
