@@ -7,9 +7,7 @@ This image uses Supervisord the daemon to allow 2 processes to run
 - apache2
 - a cron daemon
 
-
 The image is purposely configured clean with an simple configuration for SWITCHwayf with options to permit derivations to choose what they customize.
-
 
 
 ## To Build the image
