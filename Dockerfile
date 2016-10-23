@@ -74,7 +74,7 @@ RUN sed -i -e "s/short_open_tag\s*=\s*Off/short_open_tag = On/g" /etc/php5/apach
 # Supervisor Config
 RUN /usr/bin/easy_install supervisor
 RUN /usr/bin/easy_install supervisor-stdout
-ADD ./ds/supervisord.conf /etc/supervisor/supervisord.conf
+COPY ./ds/supervisord.conf /etc/supervisor/supervisord.conf
 
 ###
 ### overlay out base application layer from our code repository from github (in this case it's a PHP app)
@@ -155,7 +155,10 @@ EXPOSE 80
 
 
 # Initialization Startup Script
-ADD ./ds/start.sh /start.sh
+# 
+# This was 'ADD', using COPY instead to fix breaking build inspired by responses here:
+# http://stackoverflow.com/questions/24958140/what-is-the-difference-between-the-copy-and-add-commands-in-a-dockerfile
+COPY ./ds/start.sh /start.sh
 RUN chmod 755 /start.sh
 
 CMD ["/bin/bash", "/start.sh", "${CDS_AGGREGATE}"]
