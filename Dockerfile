@@ -1,7 +1,16 @@
 FROM ubuntu:14.04
 MAINTAINER Chris Phillips <chris.phillips@canarie.ca>
 
+
 USER root
+
+# docker automated builds choked strangely after working intitially.
+# the next uncommented line was inspired by: 
+# http://stackoverflow.com/questions/28517090/docker-hub-automated-build-fails-but-locally-not
+# and
+# http://stackoverflow.com/questions/28649793/different-home-directory-during-docker-build-in-docker-hub
+ENV HOME /root
+
 ###
 ### Configure our 'base'
 ###
