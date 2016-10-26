@@ -14,10 +14,17 @@ if [ $# -eq 0 ]
     echo "No arguments supplied, default will be ${AGGDEFAULT}"
     echo "and single entity of example.com in IdProvider.conf.php"
 fi
-
-
 	AGGREGATE=${1:-$AGGDEFAULT}
+
+regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
+
+if [[ $AGGREGATE =~ $regex ]]
+then 
 	curl  ${AGGREGATE} -o /var/www/metadata.myFederation.xml
 	/usr/bin/php /var/www/html/DS/readMetadata.php
 	chown www-data:www-data /tmp/wayf_metadata.lock
+else
+    echo "aggregate invalid, skipping update"
+fi
+ 		
 
