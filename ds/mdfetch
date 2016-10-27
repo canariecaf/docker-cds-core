@@ -3,22 +3,42 @@ set -u
 set -e 
 set -x
 
-# sourcing our default variables
+# Container may have overrides on some settings, let's detect what matters to us:
+
+OVERRIDE_CDS_AGGREGATE=${CDS_AGGREGATE}
+
+# sourcing our default variables we were built with
+
 . /var/www/env
 
-
-# testshib: http://www.testshib.org/metadata/testshib-providers.xml
+# Our default starts empty and then we go through a precedence order check 
 #
+# Highest to lowest precedence order is:
+#	- Command line arguement to the script
+# 	- Arguement to docker container passed in
+#	- Default setting that the container was originally built with
+#
+
 AGGDEFAULT="";
 
+if [ "${OVERRIDE_CDS_AGGREGATE}" = "" ]
+	then
+	echo "No container override detected"
+	AGGDEFAULT=${CDS_AGGREGATE}
+else
+	echo "Detected container with a specific aggregate, going to use that instead: ${OVERRIDE_CDS_AGGREGATE}"
+	AGGDEFAULT=${OVERRIDE_CDS_AGGREGATE}
+fi
+
+
 if [ $# -eq 0 ]
-  then
-    AGGDEFAULT=${CDS_AGGREGATE}
-    echo "No arguments supplied, default will be ${AGGDEFAULT}"
-    echo "and single entity of example.com in IdProvider.conf.php"
+  then    
+    echo "No command line arguments supplied, default will be ${AGGDEFAULT}"
 fi
 	AGGREGATE=${1:-$AGGDEFAULT}
 
+#
+# This is our regex trap for URLs to ensure we have a url. If not, we skip
 regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
 
 if [[ $AGGREGATE =~ $regex ]]
