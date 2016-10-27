@@ -152,7 +152,7 @@ RUN (cd /var/www; /var/www/overlay.sh ${CDS_OVERLAYURL} )
 
 
 EXPOSE 80
-
+EXPOSE 443
 
 # Initialization Startup Script
 # 

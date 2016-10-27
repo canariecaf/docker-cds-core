@@ -8,5 +8,6 @@ services:
     command: '/root/start.sh'
     ports:
       - "80:80"
+      - "443:443
     
       

@@ -3,10 +3,14 @@ set -u
 set -e 
 set -x
 
+# sourcing our default variables
+. /var/www/env
+
+
 # testshib: http://www.testshib.org/metadata/testshib-providers.xml
 #
 AGGDEFAULT="";
-MYAGGREGATE="/var/www/aggregate2fetch"
+MYAGGREGATE="${CDS_AGGREGATE}"
 
 if [ $# -eq 0 ]
   then
