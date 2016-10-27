@@ -10,11 +10,10 @@ set -x
 # testshib: http://www.testshib.org/metadata/testshib-providers.xml
 #
 AGGDEFAULT="";
-MYAGGREGATE="${CDS_AGGREGATE}"
 
 if [ $# -eq 0 ]
   then
-    AGGDEFAULT=`cat ${MYAGGREGATE}`
+    AGGDEFAULT=${CDS_AGGREGATE}
     echo "No arguments supplied, default will be ${AGGDEFAULT}"
     echo "and single entity of example.com in IdProvider.conf.php"
 fi
