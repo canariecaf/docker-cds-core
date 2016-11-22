@@ -9,6 +9,16 @@ set -u
 . /root/env
 
 MYAGGREGATE=${CDS_AGGREGATE}
+
+if [ "${CDS_TRIGGER_IMPRINT}" = "Y" ]
+then
+	echo "Imprinting image with new settings for container"
+	(cd ${CDS_BASE}; ${CDS_BASE}/imprint.sh)
+else
+	echo "Container existing settings being used, imprinting being skipped"
+fi
+
+
 if [ $# -eq 0 ]
   then
   	AGGDEFAULT=${CDS_AGGREGATE}
