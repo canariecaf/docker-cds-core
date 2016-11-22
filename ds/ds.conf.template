@@ -2,13 +2,14 @@
 # Discovery Service mapping that enables the CAF.ds to function as advertised
 #
 
-Alias /DS /var/www/cds/html
+Alias /${CDS_HTMLWAYFDIR} ${CDS_HTMLROOTDIR}
 
-<Directory /var/www/html/DS>
+<Directory ${CDS_HTMLROOTDIR}>
     Options Indexes MultiViews
     AllowOverride None
     Order allow,deny
     Allow from all
+    Require all granted
 
     <FilesMatch ".+\.ds$">
 SetHandler application/x-httpd-php

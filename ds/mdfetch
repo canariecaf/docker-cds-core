@@ -9,7 +9,7 @@ OVERRIDE_CDS_AGGREGATE=${CDS_AGGREGATE}
 
 # sourcing our default variables we were built with
 
-. /var/www/env
+. /root/env
 
 # Our default starts empty and then we go through a precedence order check 
 #
@@ -43,8 +43,8 @@ regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]
 
 if [[ $AGGREGATE =~ $regex ]]
 then 
-	curl  ${AGGREGATE} -o /var/www/metadata.myFederation.xml
-	/usr/bin/php /var/www/html/DS/readMetadata.php
+	curl  ${AGGREGATE} -o ${CDS_HTMLROOTDIR}/metadata.myFederation.xml
+	/usr/bin/php ${CDS_HTMLROOTDIR}/readMetadata.php
 	chown www-data:www-data /tmp/wayf_metadata.lock
 else
     echo "aggregate invalid, skipping update"

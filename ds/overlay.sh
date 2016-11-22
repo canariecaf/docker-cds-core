@@ -4,14 +4,14 @@ set -e
 set -x
 
 # Source the build variables of the container so we can be abstracted
-. /var/www/env
+. /root/env
 
 
 # set up the overlay environment for this harness to invoke the overlay steps
 #
 OVLDEFAULT="";
-MYOVERLAY="/var/www/defaultoverlayurl"
-WORKDIR="/var/www/_work"
+MYOVERLAY="${CDS_OVERLAYURL}"
+WORKDIR="${CDS_BASE}/_work"
 
 
 # Note that you can use file:///path/to/source/file as the default 
@@ -19,7 +19,7 @@ WORKDIR="/var/www/_work"
 
 if [ $# -eq 0 ]
   then
-    OVLDEFAULT=`cat ${MYOVERLAY}`
+    OVLDEFAULT=${MYOVERLAY}
     echo "No arguments supplied, no overlay actions taken, exiting overlay process gracefully"
     exit
 fi

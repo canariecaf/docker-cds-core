@@ -3,22 +3,26 @@ set -x
 set -e 
 set -u 
 
+
 # start all the services
 # boostrap the metadata by fetching if from /var/www/aggregate2fetch which should be a URL for an XML file
-MYAGGREGATE=/var/www/aggregate2fetch
+. /root/env
+
+MYAGGREGATE=${CDS_AGGREGATE}
 if [ $# -eq 0 ]
   then
-  	AGGDEFAULT=`cat ${MYAGGREGATE}`
-    echo "No arguments supplied, default aggregate from /var/www/aggregate2fetch is: ${AGGDEFAULT}"
+  	AGGDEFAULT=${CDS_AGGREGATE}
+    echo "No arguments supplied, default aggregate  is: ${AGGDEFAULT}"
 else
-    echo "Detected ${1} as aggregate, storing this for our cronjob to use in our container in /var/www/aggregate2fetch"
-	echo "${1}" > ${MYAGGREGATE}
+    echo "Detected ${1} as aggregate, using this for our aggregate by tacking it on the end of our env"
+    echo "# Overriding the CDS_AGGREGATE"
+	echo "CDS_AGGREGATE=${1}" >> /root/env
 fi
 
 #
 # note that the metadata fetch needs to have the config file as the full path.
 # mdfetch needs to know what directory to write to and is derived from within the container
 
-(cd /var/www; /var/www/mdfetch)
+(cd ${CDS_BASE}; ${CDS_BASE}/mdfetch)
 echo "launching supervisord"
 /usr/local/bin/supervisord -n

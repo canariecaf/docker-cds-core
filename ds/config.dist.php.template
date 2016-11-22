@@ -8,11 +8,12 @@
 //******************************************************************************
 
 // This is required so that cronjobs know where to run and includes can run properly as well.
+$cds_settings=parse_ini_file('/root/env');
 
-set_include_path('/var/www/html/DS/');
+set_include_path($cds_settings['CDS_CODEBASE']);
 
-$rootPath = '/var/www/';
-$wwwPath = $rootPath . 'html/DS/';
+$rootPath = $cds_settings['CDS_HTMLROOTDIR']."/";
+$wwwPath = $rootPath ;
 $wwwBaseProtocol= 'http';
 // can be 'https'
 
@@ -201,7 +202,7 @@ $IDPConfigFile = $wwwPath . 'IDProvider.conf.php';
 $backupIDPConfigFile = $wwwPath . 'IDProvider.conf.php';
 
 // Use $metadataFile as source federation's metadata.
-$metadataFile = $rootPath .'/metadata.myFederation.xml';
+$metadataFile = $rootPath .'metadata.myFederation.xml';
 
 // File to store the parsed IdP list
 // Will be updated automatically if the metadataFile modification time

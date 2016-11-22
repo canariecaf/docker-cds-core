@@ -1,4 +1,8 @@
 <?php
-	header("Location: /DS/CAF.ds");
+$cds_settings=parse_ini_file('/root/env');
+
+set_include_path($cds_settings['CDS_CODEBASE']);
+
+	header("Location: ".$cds_settings['CDS_HTMLWAYFDIR']."/".$cds_settings['CDS_WAYFDESTFILENAME'] );
 	die;
 ?>

@@ -14,14 +14,23 @@ ENV HOME /root
 ###
 ### Configure our 'base'
 ###
+ARG CDS_BASE=/root/cds
+ARG CDS_BASE_TEMPLATE=${CDS_BASE}/template
+
+# where we leave our settings inside the container for everything else to inherit and use
+
+ENV CDS_BUILD_ENV=/root/env
 
 ### 
 ### important build arguements
 ###
 
+
 ARG CDS_AGGREGATE=https://caf-shib2ops.ca/CoreServices/caf_metadata_signed_sha256.xml
-ARG CDS_HTMLROOTDIR=/var/www/html
-ARG CDS_HTMLWAYFDIR=/var/www/html/DS
+ARG CDS_CODEBASE=/var/www/cds
+ARG CDS_HTMLROOTDIR=${CDS_BASE}/html
+ARG CDS_HTMLWAYFDIR=DS
+ARG CDS_WAYFORIGINFILENAME=WAYF
 ARG CDS_WAYFDESTFILENAME=CAF.ds
 ARG CDS_REFRESHFREQINMIN=5
 ARG CDS_OVERLAYURL=""
@@ -30,12 +39,14 @@ ARG CDS_OVERLAYURL=""
 ### important environment variables for runtime
 ###
 
+ENV CDS_BASE=$CDS_BASE
+ENV CDS_CODEBASE=$CDS_CODEBASE
 ENV CDS_AGGREGATE=$CDS_AGGREGATE
 ENV CDS_REFRESHFREQINMIN=$CDS_REFRESHFREQINMIN
 ENV CDS_OVERLAYURL=$CDS_OVERLAYURL
+ENV CDS_WAYFORIGINFILENAME=$CDS_WAYFORIGINFILENAME
 
-# where we leave our settings for the container's shell scripts to inherit
-ENV CDS_BUILD_ENV=/var/www/env
+
 
 # inspired from https://github.com/eugeneware/docker-apache-php/blob/master/Dockerfile
 # Keep upstart from complaining
@@ -48,6 +59,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get -y install  \
 apache2 \
 curl \
 cron \
+gettext-base \
 libapache2-mod-php5 \
 php-apc \
 python-setuptools \
@@ -80,75 +92,75 @@ COPY ./ds/supervisord.conf /etc/supervisor/supervisord.conf
 ### overlay out base application layer from our code repository from github (in this case it's a PHP app)
 ###
 
-# expecting to be in /var/www/html
-WORKDIR  ${CDS_HTMLROOTDIR}
+
+WORKDIR  ${CDS_BASE}
+
+#
+# writing our settings to the image for other scripts to leverage
+
+RUN echo "CDS_AGGREGATE=${CDS_AGGREGATE}" > ${CDS_BUILD_ENV}
+RUN echo "CDS_BASE=${CDS_BASE}" >> ${CDS_BUILD_ENV}
+RUN echo "CDS_BASE_TEMPLATE=${CDS_BASE_TEMPLATE}" >> ${CDS_BUILD_ENV}
+RUN echo "CDS_CODEBASE=${CDS_CODEBASE}" >> ${CDS_BUILD_ENV}
+RUN echo "CDS_HTMLROOTDIR=${CDS_HTMLROOTDIR}" >> ${CDS_BUILD_ENV}
+RUN echo "CDS_HTMLWAYFDIR=${CDS_HTMLWAYFDIR}" >> ${CDS_BUILD_ENV}
+RUN echo "CDS_OVERLAYURL=${CDS_OVERLAYURL}" >> ${CDS_BUILD_ENV}
+RUN echo "CDS_REFRESHFREQINMIN=${CDS_REFRESHFREQINMIN}" >> ${CDS_BUILD_ENV}
+RUN echo "CDS_WAYFDESTFILENAME=${CDS_WAYFDESTFILENAME}" >> ${CDS_BUILD_ENV}
+RUN echo "CDS_WAYFORIGINFILENAME=${CDS_WAYFORIGINFILENAME}" >> ${CDS_BUILD_ENV}
+RUN chmod 755 /root/env
+RUN chmod 755 /root
+
 
 # we want to grab the latest all the time so want to use cache busting
 # inspired by: http://stackoverflow.com/questions/37208027/openshift-3-1-prevent-docker-from-caching-curl-resource
 
 RUN (CACHEBUST=$(date +%s); curl -sSLOk https://github.com/canariecaf/cds/archive/master.zip)
 RUN unzip master.zip
+RUN mv cds-master ${CDS_BASE}/html
+
+# remove the default index.html file
+RUN rm /var/www/html/index.html
 
 ####
 #### Begin Customization of the application layer
 ####
 
-# move DS into a legacy location 
-RUN mv cds-master DS
+# First we copy our known templates into place:
 
-#move actual DS php executable to our legacy location
-RUN mv ${CDS_HTMLWAYFDIR}/WAYF ${CDS_HTMLWAYFDIR}/${CDS_WAYFDESTFILENAME}
+RUN mkdir -p ${CDS_BASE}/template/
+COPY ds/*.template ${CDS_BASE}/template/
 
-
-# Apply our overlay to the application
-
-COPY ds/config.dist.php.template ${CDS_HTMLWAYFDIR}/config.php
-COPY ds/IDProvider.conf.dist.php.template ${CDS_HTMLWAYFDIR}/IDProvider.conf.php
-
-# remove the default index.html file
-RUN rm ${CDS_HTMLROOTDIR}/index.html
-
-# place redirection into the root of the webserver
-COPY ds/index.php.template ${CDS_HTMLROOTDIR}/index.php
-
-
-COPY ds/ds.conf /etc/apache2/conf-available/ds.conf
-RUN a2enconf ds
-#RUN service apache2 reload
-
-# test the environments
-RUN echo "${CDS_AGGREGATE}" > /var/www/aggregate2fetch
-
-COPY ds/mdfetch /var/www/mdfetch
-RUN chmod +x /var/www/mdfetch
-
-#RUN (cd /var/www; /var/www/mdfetch)
-
-RUN chown -R www-data:www-data ${CDS_HTMLWAYFDIR}
 
 # test crons added via crontab
-RUN echo "*/${CDS_REFRESHFREQINMIN} * * * * /var/www/mdfetch " | crontab -  
+RUN echo "*/${CDS_REFRESHFREQINMIN} * * * * ${CDS_BASE}/mdfetch " | crontab -  
 
-# RUN echo "*/1 * * * * uptime >> /var/www/html/index.html" | crontab -  
-# RUN (crontab -l ; echo "*/2 * * * * free >> /var/www/html/index.html") 2>&1 | crontab -
 
-#
-# writing our settings to the image for other scripts to leverage
+# NOTE:  the imprinting of the WAYF software is done  with this command.
+# if you want to imprint it DIFFERENTLY, write the ENV file and THEN invoke this again
+# 
+COPY ds/imprint.sh ${CDS_BASE}/imprint.sh
+RUN chmod +x ${CDS_BASE}/imprint.sh
+RUN ${CDS_BASE}/imprint.sh
 
-RUN echo "CDS_AGGREGATE=${CDS_AGGREGATE}" > ${CDS_BUILD_ENV}
-RUN echo "CDS_HTMLROOTDIR=${CDS_HTMLROOTDIR}" >> ${CDS_BUILD_ENV}
-RUN echo "CDS_HTMLWAYFDIR=${CDS_HTMLWAYFDIR}" >> ${CDS_BUILD_ENV}
-RUN echo "CDS_WAYFDESTFILENAME=${CDS_WAYFDESTFILENAME}" >> ${CDS_BUILD_ENV}
-RUN echo "CDS_REFRESHFREQINMIN=${CDS_REFRESHFREQINMIN}" >> ${CDS_BUILD_ENV}
-RUN echo "CDS_OVERLAYURL=${CDS_OVERLAYURL}" >> ${CDS_BUILD_ENV}
+COPY ds/mdfetch ${CDS_BASE}/mdfetch
+RUN chmod +x ${CDS_BASE}/mdfetch
+RUN chown -R www-data:www-data ${CDS_HTMLROOTDIR}/
+RUN chmod 755 /root/cds
+
+
+RUN a2enconf ds
+
 
 #
 # place the overlay harness into image, the overlay URL to use, and invoke
 # default is to be a blank overlay URL and 'do nothing'
 
-COPY ds/overlay.sh /var/www/overlay.sh
-RUN echo "${CDS_OVERLAYURL}" > /var/www/defaultoverlayurl
-RUN (cd /var/www; /var/www/overlay.sh ${CDS_OVERLAYURL} )
+COPY ds/overlay.sh ${CDS_BASE}/overlay.sh
+RUN chmod +x ${CDS_BASE}/overlay.sh
+
+
+RUN (cd ${CDS_BASE}; ${CDS_BASE}/overlay.sh ${CDS_OVERLAYURL} )
 
 
 EXPOSE 80
@@ -163,7 +175,6 @@ RUN chmod 755 /root/start.sh
 
 CMD ["/bin/bash", "/root/start.sh", "${CDS_AGGREGATE}"]
 
-#CMD /bin/bash /start.sh ${CDS_AGGREGATE}
 
 
 
