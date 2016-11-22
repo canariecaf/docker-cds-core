@@ -27,7 +27,7 @@ function esb ()
 		target=$2
 	 fi
 
-envsubst < ${origin} > ${target}
+(source ${CDS_BUILD_ENV}; export $(cat ${CDS_BUILD_ENV} |egrep -v "^#" |cut -d= -f1); envsubst < ${origin} > ${target} )
 
 }
 
@@ -38,15 +38,16 @@ envsubst < ${origin} > ${target}
 # There may be overrides of a certain nature that will change how the container functions
 cd ${CDS_BASE}
 
+CDS_FIRSTTIME="N";
 if [ "${CDS_WAYFCURRENTFILENAME:-NOFILE}" = "NOFILE" ]
 then
         CDS_WAYFCURRENTFILENAME=${CDS_WAYFORIGINFILENAME}
-fi
+fi           
 
 
 #move actual DS php executable to our legacy location
-        if [ -a "${CDS_HTMLROOTDIR}/${CDS_WAYFCURRENTFILENAME}" ] && [ "${CDS_WAYFCURRENTFILENAME}" != "${CDS_WAYFDESTFILENAME}" ]
-                then
+        if ( [ -a "${CDS_HTMLROOTDIR}/${CDS_WAYFCURRENTFILENAME}" ] && [ "${CDS_WAYFCURRENTFILENAME}" != "${CDS_WAYFDESTFILENAME}" ]  )
+                 then
                         mv ${CDS_HTMLROOTDIR}/${CDS_WAYFORIGINFILENAME} ${CDS_HTMLROOTDIR}/${CDS_WAYFDESTFILENAME}
                         echo "CDS_WAYFCURRENTFILENAME=${CDS_WAYFDESTFILENAME}" >> ${CDS_BUILD_ENV}
      					NOW=`date`
