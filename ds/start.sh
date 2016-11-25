@@ -29,10 +29,24 @@ else
 	echo "CDS_AGGREGATE=${1}" >> /root/env
 fi
 
-#
-# note that the metadata fetch needs to have the config file as the full path.
-# mdfetch needs to know what directory to write to and is derived from within the container
 
-(cd ${CDS_BASE}; ${CDS_BASE}/mdfetch)
+. /root/env
+
+regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
+
+if [[ $CDS_AGGREGATE =~ $regex ]]
+then 
+	
+	#
+	# note that the metadata fetch needs to have the config file as the full path.
+	# mdfetch needs to know what directory to write to and is derived from within the container
+
+	(cd ${CDS_BASE}; ${CDS_BASE}/mdfetch)
+
+
+else
+    echo "aggregate invalid, skipping update"
+fi
+
 echo "launching supervisord"
 /usr/local/bin/supervisord -n
