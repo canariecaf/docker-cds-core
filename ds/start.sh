@@ -37,24 +37,19 @@ function isGoodURL ()
 
 
 
-if [ $# -eq 0 ]
-  then
-    echo "No arguments supplied, default aggregate to come from /root/env"
+if isGoodURL ${CDS_AGGREGATE} 
+then 
+    echo "# Overriding the CDS_AGGREGATE"
+	echo "CDS_AGGREGATE=${CDS_AGGREGATE}" >> /root/env
+	echo "Since aggregate is new, we redo our flip CDS_TRIGGER_IMPRINT from ${CDS_TRIGGER_IMPRINT}"
+	CDS_TRIGGER_IMPRINT=${CDS_TRIGGER_IMPRINT}
+	echo "To CDS_TRIGGER_IMPRINT: ${CDS_TRIGGER_IMPRINT}"
+	
 else
-    echo "Detected command line aggregate of:${1} . Once validated, using it by tacking it on the end of our env"
-		if isGoodURL ${1} 
-		then 
-		    echo "# Overriding the CDS_AGGREGATE"
-			echo "CDS_AGGREGATE=${1}" >> /root/env
-			echo "Since aggregate is new, we redo our flip CDS_TRIGGER_IMPRINT from ${CDS_TRIGGER_IMPRINT}"
-			CDS_TRIGGER_IMPRINT=${CDS_TRIGGER_IMPRINT}
-			echo "To CDS_TRIGGER_IMPRINT: ${CDS_TRIGGER_IMPRINT}"
-			
-		else
-		    echo "Passed in aggregate invalid, IT IS NOT APPLIED. Using /root/env as is."
-		fi
-
+    echo "Passed in aggregate empty or invalid URL, NOT APPLIED. Using /root/env as is."
 fi
+
+
 
 if [ "${CDS_TRIGGER_IMPRINT}" = "Y" ]
 then
@@ -81,4 +76,4 @@ else
 fi
 
 echo "launching supervisord"
-/usr/local/bin/supervisord -n
+/usr/local/bin/supervisord -n -c /etc/supervisor/supervisord.conf

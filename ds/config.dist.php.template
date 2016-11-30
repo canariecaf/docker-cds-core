@@ -31,7 +31,7 @@ $defaultLanguage = 'en';
 //*******************
 
 // Domain within the WAYF cookie should be readable. Must start with a .
-$commonDomain = '.example.com';
+$commonDomain = $cds_settings['CDS_COMMONDOMAIN'];
 
 // Optionnal cookie name prefix in case you run several 
 // instances of the WAYF in the same domain. 
@@ -300,6 +300,6 @@ $organizationLogoURL = 'images/organization-logo.png';
 //**************************
 // If the development mode is activated, PHP errors and warnings will be displayed
 // on pages the SWITCHwayf generates
-$developmentMode = true;
+$developmentMode = $cds_settings['CDS_DEVELOPMENTMODE'];
 
 ?>
