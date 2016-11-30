@@ -4,9 +4,7 @@ set -e
 set -u 
 
 
-# start all the services
-# boostrap the metadata by fetching if from /var/www/aggregate2fetch which should be a URL for an XML file
-. /root/env
+
 
 function isGoodURL ()
 {
@@ -38,7 +36,25 @@ function isGoodURL ()
 }
 
 
-MYAGGREGATE=${CDS_AGGREGATE}
+
+if [ $# -eq 0 ]
+  then
+    echo "No arguments supplied, default aggregate to come from /root/env"
+else
+    echo "Detected command line aggregate of:${1} . Once validated, using it by tacking it on the end of our env"
+		if isGoodURL ${1} 
+		then 
+		    echo "# Overriding the CDS_AGGREGATE"
+			echo "CDS_AGGREGATE=${1}" >> /root/env
+			echo "Since aggregate is new, we redo our flip CDS_TRIGGER_IMPRINT from ${CDS_TRIGGER_IMPRINT}"
+			CDS_TRIGGER_IMPRINT=${CDS_TRIGGER_IMPRINT}
+			echo "To CDS_TRIGGER_IMPRINT: ${CDS_TRIGGER_IMPRINT}"
+			
+		else
+		    echo "Passed in aggregate invalid, IT IS NOT APPLIED. Using /root/env as is."
+		fi
+
+fi
 
 if [ "${CDS_TRIGGER_IMPRINT}" = "Y" ]
 then
@@ -49,22 +65,6 @@ else
 fi
 
 
-if [ $# -eq 0 ]
-  then
-  	AGGDEFAULT=${CDS_AGGREGATE}
-    echo "No arguments supplied, default aggregate  is: ${AGGDEFAULT}"
-else
-    echo "Detected command line aggregate of:${1} . Once validated, using it by tacking it on the end of our env"
-		if isGoodURL ${1} 
-		then 
-		    echo "# Overriding the CDS_AGGREGATE"
-			echo "CDS_AGGREGATE=${1}" >> /root/env
-		else
-		    echo "Passed in aggregate invalid, IT IS NOT APPLIED. Using /root/env as is."
-		fi
-
-
-fi
 
 # we do this again as we may have self updated it above.
 . /root/env

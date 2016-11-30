@@ -66,3 +66,5 @@ chown -R www-data:www-data /var/www/html
 
 esb ${CDS_BASE_TEMPLATE}/ds.conf.template /etc/apache2/conf-available/ds.conf
 
+service apache2 restart
+

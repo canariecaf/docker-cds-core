@@ -6,10 +6,42 @@ set -x
 # Container may have overrides on some settings, let's detect what matters to us:
 
 OVERRIDE_CDS_AGGREGATE=${CDS_AGGREGATE}
-
+echo "Storing OVERRIDE_CDS_AGGREGATE as: ${OVERRIDE_CDS_AGGREGATE}"
 # sourcing our default variables we were built with
 
 . /root/env
+
+
+function isGoodURL ()
+{
+	# 0 is 'good' or true since this maps to a command that successfully ran with zero errors
+	# 1 is 'bad' or false since it maps to a command that errored out
+	# see: http://stackoverflow.com/questions/5431909/bash-functions-return-boolean-to-be-used-in-if
+
+	local regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
+	local theURL=""
+
+	if [ -z "$1" ]                           # Is parameter #1 zero length?
+   	then
+     	echo "Parameter #1 is zero length, invalid invocation"  # Or no parameter passed.
+     	return 1
+ 	else
+ 		theURL=$1
+ 	fi
+	
+	if [[ $theURL =~ $regex ]]
+	then 
+	
+		return 0
+
+	else
+    	echo "Nope, $theURL is not a url"
+    	return 1
+	fi
+
+}
+
+
 
 # Our default starts empty and then we go through a precedence order check 
 #
