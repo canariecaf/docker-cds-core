@@ -1,11 +1,21 @@
 #!/usr/bin/env bash
-set -x
+
+#   This script starts the supervisor daemon for httpd and cron
+#
+####################
+# Step 1: set base operational posture
+####################
+
 set -e 
-set -u 
+# the name of the script, avoiding symlinks
+myname="$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")"
 
+# The 'debug' settings are done first to allow the script to supercede local settings
+[[  "${CDS_DEVELOPMENTMODE}" = "true" ]] && set -x ||  echo "INFO:$myname: running"
 
-
-
+####################
+# Step 2: Create our necessary functions
+####################
 function isGoodURL ()
 {
 	# 0 is 'good' or true since this maps to a command that successfully ran with zero errors
@@ -34,22 +44,47 @@ function isGoodURL ()
 	fi
 
 }
+#
+# function overrideFromEnv (varname)
+#   varname - variable to pluck from container environment (passed in from settings) and persist in /root/env
 
+function overrideFromEnv ()
+{
+	local varname=$1
+#	local varval=`eval \$$1`
+if [[ -z "${!varname}" ]]
+then
+ 	echo "$varname is empty, no override done"
+ 	else
+ 	 CDS_TRIGGER_IMPRINT="Y"
+ 	 echo "$varname=${!varname}" >> /root/env 
+fi
 
+}
 
+####################
+# Step 3: These are the PERMITTED runtime overrides we will inherit
+####################
+overrideFromEnv CDS_REFRESHFREQMIN
+overrideFromEnv CDS_HTMLWAYFDIR
+overrideFromEnv CDS_WAYFDESTFILENAME
+
+# only override if 
 if isGoodURL ${CDS_AGGREGATE} 
 then 
     echo "# Overriding the CDS_AGGREGATE"
-	echo "CDS_AGGREGATE=${CDS_AGGREGATE}" >> /root/env
+	overrideFromEnv CDS_AGGREGATE
 	echo "Since aggregate is new, we redo our flip CDS_TRIGGER_IMPRINT from ${CDS_TRIGGER_IMPRINT}"
-	CDS_TRIGGER_IMPRINT=${CDS_TRIGGER_IMPRINT}
+	CDS_TRIGGER_IMPRINT="Y"
 	echo "To CDS_TRIGGER_IMPRINT: ${CDS_TRIGGER_IMPRINT}"
 	
 else
     echo "Passed in aggregate empty or invalid URL, NOT APPLIED. Using /root/env as is."
 fi
 
-
+####################
+# Step 4: Given settings, detect if we need to 're-bake' the image
+####################
 
 if [ "${CDS_TRIGGER_IMPRINT}" = "Y" ]
 then
@@ -59,11 +94,16 @@ else
 	echo "Container existing settings being used, imprinting being skipped"
 fi
 
-
+####################
+# Step 5: Load our environment - post 'bake'
+####################
 
 # we do this again as we may have self updated it above.
 . /root/env
 
+####################
+# Step 6: Process the aggregate
+####################
 
 if isGoodURL $CDS_AGGREGATE 
 then 
@@ -74,6 +114,9 @@ then
 else
     echo "aggregate invalid, skipping update"
 fi
+####################
+# Step 6: Launch supervisorD
+####################
 
 echo "launching supervisord"
 /usr/local/bin/supervisord -n -c /etc/supervisor/supervisord.conf
