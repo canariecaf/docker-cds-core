@@ -5,7 +5,7 @@
 Alias /${CDS_HTMLWAYFDIR} ${CDS_HTMLROOTDIR}
 
 <Directory ${CDS_HTMLROOTDIR}>
-    Options Indexes MultiViews
+    Options -Indexes +MultiViews
     AllowOverride None
     Order allow,deny
     Allow from all
