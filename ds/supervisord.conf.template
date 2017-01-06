@@ -23,12 +23,29 @@ supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
 [supervisorctl]
 serverurl=unix:///var/run/supervisor.sock ; use a unix:// URL  for a unix socket
 
-
+; CRON Log levels
+;-L loglevel
+;  Tell cron what to log about jobs (errors are logged regardless of this value) as the sum of  the  fol‐
+;               lowing values:
+;
+;                   1      will log the start of all cron jobs
+;
+;                   2      will log the end of all cron jobs
+;
+;                   4      will log all failed jobs (exit status != 0)
+;
+;                   8      will log the process number of all cron jobs
+;
+; The  default  is  to  log the start of all jobs (1). Logging will be disabled if levels is set to zero
+;               (0). A value of fifteen (15) will select all options.
 
 [program:cron]
-command=cron -f
+user=root
+command=/usr/sbin/cron -f -L 4
 stdout_events_enabled=true
 stderr_events_enabled=true
+stdout_logfile	= /var/log/supervisor/%(program_name)s.log
+stderr_logfile	= /var/log/supervisor/%(program_name)s.log
 
 [program:httpd]
 command=/bin/bash -c "source /etc/apache2/envvars && exec /usr/sbin/apache2 -DFOREGROUND"
