@@ -91,7 +91,7 @@ RUN sed -i -e "s/short_open_tag\s*=\s*Off/short_open_tag = On/g" /etc/php5/apach
 # Supervisor Config
 RUN /usr/bin/easy_install supervisor
 RUN /usr/bin/easy_install supervisor-stdout
-COPY ./ds/supervisord.conf /etc/supervisor/supervisord.conf
+COPY ./ds/supervisord.conf.template /etc/supervisor/supervisord.conf
 
 ###
 ### overlay out base application layer from our code repository from github (in this case it's a PHP app)
