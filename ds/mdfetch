@@ -1,7 +1,15 @@
-#!/usr/bin/env bash
-set -u 
-set -e 
-set -x
+#!/bin/bash
+#
+#	mdfetch
+#
+#	sources the /root/env environment settings and then fetches the aggregate
+#
+#
+
+# uncomment these below if you want to debug or diagnose things
+#set -u 
+#set -e 
+#set -x
 
 # Container may have overrides on some settings, let's detect what matters to us:
 
@@ -41,6 +49,11 @@ function isGoodURL ()
 
 }
 
+function log2html ()
+{
+
+	echo `date` "$1" > ${CDS_HTMLROOTDIR}/status.txt
+}
 
 
 # Our default starts empty and then we go through a precedence order check 
@@ -76,10 +89,11 @@ regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]
 if [[ $AGGREGATE =~ $regex ]]
 then 
 	curl  ${AGGREGATE} -o ${CDS_HTMLROOTDIR}/metadata.myFederation.xml
-	/usr/bin/php ${CDS_HTMLROOTDIR}/readMetadata.php
+	/usr/bin/php ${CDS_HTMLROOTDIR}/readMetadata.php > ${CDS_CODEBASE}/stats.txt
 	chown www-data:www-data /tmp/wayf_metadata.lock
 else
     echo "aggregate invalid, skipping update"
 fi
- 		
+ 	LOGLINE=`cat ${CDS_CODEBASE}/stats.txt |awk -F"(" '(NF>1 && NF!="") {print $2}'`
+ 	log2html "#LEVEL=INFO#Refreshrate=${CDS_REFRESHFREQINMIN}#Counts=${LOGLINE}"	
 
