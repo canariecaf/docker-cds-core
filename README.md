@@ -45,13 +45,16 @@ Environment variables with their defaults if they do not exist are:
 pass them in on the command line:
 
 ```sh
-$ sudo docker run -e CDS_AGGREGATE=ttps://caf-shib2ops.ca/CoreServices/caf_metadata_signed_sha256.xml -e CDS_REFRESHFREQINMIN=5 -d -p 80:80 --restart=always canariecaf/docker-cds-caf
+$ sudo docker run -e CDS_AGGREGATE=ttps://caf-shib2ops.ca/CoreServices/caf_metadata_signed_sha256.xml -e CDS_REFRESHFREQINMIN=5 -d -p 80:80 --restart=always canariecaf/docker-cds-core
 ```
 
 ## How to do a basic test?
 
 Open browser and point to: **http://localhost**
 If everthing is fine you should see the default Service Discovery Page with your aggregate
+
+Additionally, you can visit **http://localhost/DS/status.txt**
+This single row will indicate the last aggregate fetched,frequency of update, and entity counts of the last processed list.
 
 ## Known limitations
 
