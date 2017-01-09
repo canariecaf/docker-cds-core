@@ -51,8 +51,8 @@ function isGoodURL ()
 
 function log2html ()
 {
-
-	echo `date` "$1" > ${CDS_HTMLROOTDIR}/status.txt
+	local date_epoch=`date +%s`
+	echo "date_epoch=${date_epoch}#$1" > ${CDS_HTMLROOTDIR}/status.txt
 }
 
 
@@ -94,6 +94,6 @@ then
 else
     echo "aggregate invalid, skipping update"
 fi
- 	LOGLINE=`cat ${CDS_CODEBASE}/stats.txt |awk -F"(" '(NF>1 && NF!="") {print $2}'`
- 	log2html "#LEVEL=INFO#Refreshrate=${CDS_REFRESHFREQINMIN}#Counts=${LOGLINE}"	
+ 	LOGLINE=`cat ${CDS_CODEBASE}/stats.txt |awk -F"(" '(NF>1 && NF!="") {print $2}' |sed 's/)$//'`
+ 	log2html "level=INFO#refreshrate=${CDS_REFRESHFREQINMIN}#counts=${LOGLINE}"	
 
