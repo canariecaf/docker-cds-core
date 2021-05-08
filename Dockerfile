@@ -1,5 +1,5 @@
-FROM ubuntu:14.04
-MAINTAINER Chris Phillips <chris.phillips@canarie.ca>
+FROM ubuntu:latest
+LABEL maintainer="chris.phillips@canarie.ca"
 
 
 USER root
@@ -60,13 +60,21 @@ RUN ln -sf /bin/true /sbin/initctl
 
 
 # Basic Requirements
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get -y install  \
+
+# uplift from 14.04 to 20 
+# php libapache2-mod-php
+# added the upgrade step: apt-get update && apt-get upgrade -y 
+RUN DEBIAN_FRONTEND="noninteractive" apt-get update && DEBIAN_FRONTEND="noninteractive" apt-get upgrade -y && DEBIAN_FRONTEND="noninteractive" apt-get -y install  \
 apache2 \
 curl \
 cron \
 gettext-base \
-libapache2-mod-php5 \
-php-apc \
+php \
+php-xml \
+libapache2-mod-php \
+python3-pip \
+build-essential \
+python-dev \
 python-setuptools \
 supervisor \
 unzip \
@@ -86,12 +94,21 @@ RUN mkdir -p /var/lock/apache2 /var/run/apache2
 # adjustments below are for PHP to be able to handler 'larger things' -- but we want slim, so commented out
 #RUN sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = 100M/g" /etc/php5/apache2/php.ini
 #RUN sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 100M/g" /etc/php5/apache2/php.ini
-RUN sed -i -e "s/short_open_tag\s*=\s*Off/short_open_tag = On/g" /etc/php5/apache2/php.ini
+RUN sed -i -e "s/short_open_tag\s*=\s*Off/short_open_tag = On/g" /etc/php/7.4/apache2/php.ini
+#  fixme: be clever to find the file and not pin to a version of php :)
 
 # Supervisor Config
-RUN /usr/bin/easy_install supervisor
-RUN /usr/bin/easy_install supervisor-stdout
+#uplifted to python3 which the stdout driver needed some help
+# see https://github.com/coderanger/supervisor-stdout/blob/master/supervisor_stdout.py#L20 lines 2-28
+
+RUN /usr/bin/pip3 install supervisor
+RUN /usr/bin/pip3 install supervisor-stdout
+
+
 COPY ./ds/supervisord.conf.template /etc/supervisor/supervisord.conf
+RUN echo "Manually uplifting supervisor_stdout.py to known python3 version"
+RUN cp /usr/local/lib/python3.8/dist-packages/supervisor_stdout.py /usr/local/lib/python3.8/dist-packages/supervisor_stdout.py.deemed-not-p3-ready
+COPY ./ds/supervisor_stdout.py.template /usr/local/lib/python3.8/dist-packages/supervisor_stdout.py
 
 ###
 ### overlay out base application layer from our code repository from github (in this case it's a PHP app)

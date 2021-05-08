@@ -119,4 +119,6 @@ fi
 ####################
 
 echo "launching supervisord"
-/usr/local/bin/supervisord -n -c /etc/supervisor/supervisord.conf
+# uncomment sleep to permit yourself to spawn a shell for diagnosis
+#sleep 10000
+/usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
