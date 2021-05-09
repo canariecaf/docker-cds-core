@@ -17,4 +17,15 @@ SetHandler application/x-httpd-php
       AcceptPathInfo On
     </FilesMatch>
 
+# security elements for modern client support
+# each  line was added for a unique security reason and security best practice
+
+Header always set X-Frame-Options "SAMEORIGIN"
+Header always set Referrer-Policy "same-origin"
+Header always set X-Content-Type-Options "nosniff"
+Header set X-XSS-Protection "1; mode=block"
+Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains;"
+
+
+
 </Directory>

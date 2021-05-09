@@ -172,7 +172,10 @@ RUN chmod +x ${CDS_BASE}/mdfetch
 RUN chown -R www-data:www-data ${CDS_HTMLROOTDIR}/
 RUN chmod 755 /root/cds
 
+# enable the header feature in apache2
+RUN a2enmod headers
 
+# enable the specific discovery service (ds) settings
 RUN a2enconf ds
 
 
