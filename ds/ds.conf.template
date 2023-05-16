@@ -25,6 +25,9 @@ Header always set Referrer-Policy "same-origin"
 Header always set X-Content-Type-Options "nosniff"
 Header set X-XSS-Protection "1; mode=block"
 Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains;"
+# added 2023-05-16 - improved CSP to permit chrome to allow the button again (otherwise we need to nonce the form)
+Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; object-src 'none'; img-src 'self';"
+
 
 
 
