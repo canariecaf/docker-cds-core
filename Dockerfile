@@ -94,7 +94,7 @@ RUN mkdir -p /var/lock/apache2 /var/run/apache2
 # adjustments below are for PHP to be able to handler 'larger things' -- but we want slim, so commented out
 #RUN sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = 100M/g" /etc/php5/apache2/php.ini
 #RUN sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 100M/g" /etc/php5/apache2/php.ini
-RUN sed -i -e "s/short_open_tag\s*=\s*Off/short_open_tag = On/g" /etc/php/7.4/apache2/php.ini
+RUN sed -i -e "s/short_open_tag\s*=\s*Off/short_open_tag = On/g" /etc/php/8.1/apache2/php.ini
 #  fixme: be clever to find the file and not pin to a version of php :)
 
 # Supervisor Config
