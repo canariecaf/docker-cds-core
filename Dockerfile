@@ -157,7 +157,7 @@ RUN rm /var/www/html/index.html
 RUN mkdir -p ${CDS_BASE}/template/
 COPY ds/*.template ${CDS_BASE}/template/
 
-RUN echo "CDS Build Data: ${CDS_BUILDREF}" > ${CDS_HTMLROOTDIR}/builddata.txt
+RUN echo "CDS Build Data: ${CDS_BUILDREF}" > /var/www/html/builddata.txt
 
 # test crons added via crontab
 RUN echo "*/${CDS_REFRESHFREQINMIN} * * * * ${CDS_BASE}/mdfetch " | crontab -  
