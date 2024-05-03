@@ -74,8 +74,8 @@ php-xml \
 libapache2-mod-php \
 python3-pip \
 build-essential \
-python-dev \
-python-setuptools \
+python3-dev \
+python3-setuptools \
 supervisor \
 unzip \
 vim-tiny && \
