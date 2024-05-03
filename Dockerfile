@@ -38,6 +38,8 @@ ARG CDS_TRIGGER_IMPRINT=""
 ARG CDS_COMMONDOMAIN=".example.com"
 ARG CDS_DEVELOPMENTMODE="false"
 
+ARG CDS_BUILDREF="Unknown"
+
 ###
 ### important environment variables for runtime
 ###
@@ -155,6 +157,7 @@ RUN rm /var/www/html/index.html
 RUN mkdir -p ${CDS_BASE}/template/
 COPY ds/*.template ${CDS_BASE}/template/
 
+RUN echo "CDS Build Data: ${CDS_BUILDREF}" > ${CDS_HTMLROOTDIR}/builddata.txt
 
 # test crons added via crontab
 RUN echo "*/${CDS_REFRESHFREQINMIN} * * * * ${CDS_BASE}/mdfetch " | crontab -  
