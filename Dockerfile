@@ -107,8 +107,8 @@ RUN /usr/bin/pip3 install supervisor-stdout
 
 COPY ./ds/supervisord.conf.template /etc/supervisor/supervisord.conf
 RUN echo "Manually uplifting supervisor_stdout.py to known python3 version"
-RUN cp /usr/local/lib/python3.8/dist-packages/supervisor_stdout.py /usr/local/lib/python3.8/dist-packages/supervisor_stdout.py.deemed-not-p3-ready
-COPY ./ds/supervisor_stdout.py.template /usr/local/lib/python3.8/dist-packages/supervisor_stdout.py
+RUN cp /usr/local/lib/python3.10/dist-packages/supervisor_stdout.py /usr/local/lib/python3.10/dist-packages/supervisor_stdout.py.deemed-not-p3-ready
+COPY ./ds/supervisor_stdout.py.template /usr/local/lib/python3.10/dist-packages/supervisor_stdout.py
 
 ###
 ### overlay out base application layer from our code repository from github (in this case it's a PHP app)
