@@ -1,5 +1,5 @@
 FROM ubuntu:22.04
-LABEL maintainer="chris.phillips@canarie.ca"
+LABEL maintainer="ed.kingscote@canarie.ca"
 
 
 USER root
